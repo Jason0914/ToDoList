@@ -13,6 +13,7 @@ function App() {
         <li>吃早餐</li>
         <li>做運動</li>
         <li>寫程式</li>
+        <li>寫程式</li>
       </ul>
     </>
   )

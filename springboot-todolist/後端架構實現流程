@@ -19,14 +19,26 @@
 
 實現 TodoController.java - 處理 HTTP 請求和響應
 
+建構順序的邏輯是：
 
+先建立資料模型 (Entity/DTO)
+再建立資料存取層 (Repository)
+接著是業務邏輯層 (Service)
+然後是例外處理 (Exception)
+定義 API 回應格式 (ApiResponse)
+最後是控制層 (Controller)
+最後加入需要的配置類 (Config)
 
-這種由下而上的開發順序的好處是：
+每一層的職責：
 
-先確定核心數據結構
-再處理數據存取邏輯
-然後實現業務邏輯
-最後才處理外部接口
+Entity：資料庫映射
+DTO：資料傳輸
+Repository：資料存取
+Service：業務邏輯
+Controller：處理請求/回應
+Config：配置設定
+
+=============================筆記區====================================
 
 JPA (Java Persistence API) 相關的註解：
 

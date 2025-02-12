@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.todolist.exception.TodoNotFoundException;
 import com.example.todolist.model.dto.TodoDTO;
@@ -17,6 +18,7 @@ import com.example.todolist.repository.TodoRepository;
 /**
  * TodoService 的實作類別，提供所有 Todo 相關的業務邏輯處理
  */
+@Service
 public class TodoServiceImpl implements TodoService {
 
     /**

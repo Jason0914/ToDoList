@@ -1,0 +1,51 @@
+先從 Model 層開始:
+
+首先定義 Todo.java (entity) - 這是核心的數據模型
+接著定義 TodoDTO.java - 用於數據傳輸的對象
+
+
+然後是 Repository 層:
+
+實現 TodoRepository.java - 負責數據訪問和持久化
+
+
+接著是 Service 層:
+
+創建 TodoService.java (介面)
+實現 TodoServiceImpl.java - 包含業務邏輯
+
+
+最後是 Controller 層:
+
+實現 TodoController.java - 處理 HTTP 請求和響應
+
+建構順序的邏輯是：
+
+先建立資料模型 (Entity/DTO)
+再建立資料存取層 (Repository)
+接著是業務邏輯層 (Service)
+然後是例外處理 (Exception)
+定義 API 回應格式 (ApiResponse)
+最後是控制層 (Controller)
+最後加入需要的配置類 (Config)
+
+每一層的職責：
+
+Entity：資料庫映射
+DTO：資料傳輸
+Repository：資料存取
+Service：業務邏輯
+Controller：處理請求/回應
+Config：配置設定
+
+=============================筆記區====================================
+
+JPA (Java Persistence API) 相關的註解：
+
+@Entity: 標記這個類別是一個實體類，會對應到資料庫的表格
+@Table(name="todo"): 指定資料表名稱，如果沒寫就用類別名稱當表名
+@Id: 標記這個欄位是主鍵
+@GeneratedValue(strategy = GenerationType.IDENTITY):
+
+主鍵生成策略
+IDENTITY 表示使用資料庫的自動遞增功能 

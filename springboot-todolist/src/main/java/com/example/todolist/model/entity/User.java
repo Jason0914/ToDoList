@@ -17,19 +17,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)//必填且唯一
     private String username;
     
-    @Column(nullable = false)
+    @Column(nullable = false)// 必填
     private String password;
     
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)//必填且唯一
     private String email;
     
-    @Column(name = "create_time")
     private LocalDateTime createTime;
     
-    @Column(name = "update_time")
     private LocalDateTime updateTime;
     
     @PrePersist

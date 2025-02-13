@@ -16,7 +16,7 @@ public interface UserService {
 	UserResponseDTO login(LoginDTO loginDTO);
 	
 	//根據用戶名查詢用戶
-	UserResponseDTO findUserByUsername(String username);
+	UserResponseDTO findByUsername(String username);
 	
 	//檢查用戶名是否存在
 	boolean isUsernameExists(String username);

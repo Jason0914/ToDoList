@@ -7,58 +7,89 @@
  * DELETE "http://localhost:8080/todolist/{id}" 刪除待辦事項
  * ------------------------------------------------------------
  * */
-const BASE_URL = 'http://localhost:8080/todolist';
+const BASE_URL = "http://localhost:8080/todolist";
+
+// 獲取請求頭，包含授權信息
+const getHeaders = () => {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  const user = localStorage.getItem("user");
+  if (user) {
+    // 如果後端需要 JWT token，可以在這裡加入
+    // headers['Authorization'] = `Bearer ${JSON.parse(user).token}`;
+  }
+  return headers;
+};
+
+// 統一的錯誤處理
+const handleResponse = async (response) => {
+  const result = await response.json();
+  if (result.status === 200) {
+    return result.data;
+  }
+  // 如果是 401 未授權，清除本地存儲並重新導向到登入頁
+  if (response.status === 401) {
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  }
+  throw new Error(result.message || "操作失敗");
+};
 
 // 獲取所有待辦事項
-export const fetchTodos = async() => {
-    const response = await fetch(BASE_URL);
-    const result = await response.json();
-    if (result.status === 200) {
-        return result.data; // 返回資料
-    }
-    throw new Error(result.message);
+export const fetchTodos = async () => {
+  try {
+    const response = await fetch(BASE_URL, {
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Fetch todos error:", error);
+    throw error;
+  }
 };
 
 // 新增待辦事項
-export const addTodo = async(todo) => {
+export const addTodo = async (todo) => {
+  try {
     const response = await fetch(BASE_URL, {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json'
-        },
-        body: JSON.stringify(todo),
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(todo),
     });
-    const result = await response.json();
-    if (result.status === 200) {
-        return result.data; // 返回資料 json 給 then(json) 接收
-    }
-    throw new Error(result.message);
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Add todo error:", error);
+    throw error;
+  }
 };
 
 // 更新待辦事項
-export const updateTodo = async(updateTodo) => {
+export const updateTodo = async (updateTodo) => {
+  try {
     const response = await fetch(`${BASE_URL}/${updateTodo.id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-type': 'application/json'
-        },
-        body: JSON.stringify(updateTodo),
+      method: "PUT",
+      headers: getHeaders(),
+      body: JSON.stringify(updateTodo),
     });
-    const result = await response.json();
-    if (result.status === 200) {
-        return result.data; // 返回資料
-    }
-    throw new Error(result.message);
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Update todo error:", error);
+    throw error;
+  }
 };
 
 // 刪除待辦事項
-export const deleteTodo = async(id) => {
+export const deleteTodo = async (id) => {
+  try {
     const response = await fetch(`${BASE_URL}/${id}`, {
-        method: 'DELETE',
+      method: "DELETE",
+      headers: getHeaders(),
     });
-    const result = await response.json();
-    if (result.status === 200) {
-        return true; // 返回 true
-    }
-    throw new Error(result.message);
+    await handleResponse(response);
+    return true;
+  } catch (error) {
+    console.error("Delete todo error:", error);
+    throw error;
+  }
 };

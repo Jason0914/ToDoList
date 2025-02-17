@@ -1,17 +1,17 @@
-import React from 'react';
+import React from "react";
 
 const TodoItem = ({ todo, onToggleCompletion, onDelete }) => {
   return (
     <li
       className={`list-group-item d-flex justify-content-between align-items-center ${
-        todo.completed ? 'list-group-item-success' : ''
+        todo.completed ? "list-group-item-success" : ""
       }`}
     >
       {todo.id}
 
       <span
-        style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
-        onClick={() => onToggle(todo.id)}
+        style={{ textDecoration: todo.completed ? "line-through" : "none" }}
+        onClick={() => onToggleCompletion(todo.id)}
       >
         {todo.text}
       </span>
@@ -22,7 +22,12 @@ const TodoItem = ({ todo, onToggleCompletion, onDelete }) => {
           checked={todo.completed}
           onChange={() => onToggleCompletion(todo.id)}
         />
-        <button className='btn btn-danger btn-sm' onClick={() => onDelete(todo.id)}>X</button>
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={() => onDelete(todo.id)}
+        >
+          X
+        </button>
       </div>
     </li>
   );

@@ -38,16 +38,21 @@ const handleResponse = async (response) => {
 // 用戶註冊
 export const registerUser = async (userData) => {
   try {
-    console.log("Sending registration request:", userData); // 調試用
     const response = await fetch(`${BASE_URL}/register`, {
       method: "POST",
-      headers: headers,
-      credentials: "include", // 如果需要 cookies
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // 重要：允許發送 cookies
       body: JSON.stringify(userData),
     });
-    return handleResponse(response);
+    const result = await response.json();
+    if (result.status === 200) {
+      return result.data;
+    }
+    throw new Error(result.message);
   } catch (error) {
-    console.error("Registration error:", error); // 調試用
+    console.error("Registration error:", error);
     throw error;
   }
 };
@@ -55,16 +60,21 @@ export const registerUser = async (userData) => {
 // 用戶登入
 export const loginUser = async (userData) => {
   try {
-    console.log("Sending login request:", userData); // 調試用
     const response = await fetch(`${BASE_URL}/login`, {
       method: "POST",
-      headers: headers,
-      credentials: "include", // 如果需要 cookies
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // 重要：允許發送 cookies
       body: JSON.stringify(userData),
     });
-    return handleResponse(response);
+    const result = await response.json();
+    if (result.status === 200) {
+      return result.data;
+    }
+    throw new Error(result.message);
   } catch (error) {
-    console.error("Login error:", error); // 調試用
+    console.error("Login error:", error);
     throw error;
   }
 };
@@ -87,6 +97,23 @@ export const checkEmail = async (email) => {
     return handleResponse(response);
   } catch (error) {
     console.error("Email check error:", error);
+    throw error;
+  }
+};
+// 登出
+export const logoutUser = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/logout`, {
+      method: "POST",
+      credentials: "include", // 重要：允許發送 cookies
+    });
+    const result = await response.json();
+    if (result.status === 200) {
+      return true;
+    }
+    throw new Error(result.message);
+  } catch (error) {
+    console.error("Logout error:", error);
     throw error;
   }
 };

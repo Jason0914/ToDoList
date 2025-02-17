@@ -4,6 +4,8 @@
  */
 package com.example.todolist.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.example.todolist.model.entity.Todo;
@@ -15,6 +17,15 @@ import com.example.todolist.model.entity.Todo;
  */
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
+	
+	 // 根據用戶ID查詢待辦事項
+    List<Todo> findByUserId(Long userId);
+    
+    // 檢查待辦事項是否屬於某用戶
+    boolean existsByIdAndUserId(Long id, Long userId);
+    
+    // 根據用戶ID刪除待辦事項
+    void deleteByIdAndUserId(Long id, Long userId);
     // JpaRepository<實體類別, 主鍵類型>
     
     // 已經繼承的基本 CRUD 方法：

@@ -18,16 +18,14 @@ import lombok.NoArgsConstructor;
 //@Table(name="todo")//預設名稱，指定資料表名稱
 public class Todo {
 	
-	@Id//標記這個欄位是主鍵
-	@GeneratedValue(strategy = GenerationType.IDENTITY)//由資料庫來決定id生成策略，主鍵生成策略
-	private Long id;
-	
-	private String text;
-	
-	private Boolean completed;
-	
-	//添加與user的關聯
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id",nullable = false)
-	private User user;
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String text;
+    private Boolean completed;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

@@ -1,6 +1,7 @@
 package com.example.todolist.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,8 +15,11 @@ import com.example.todolist.model.dto.UserResponseDTO;
 import com.example.todolist.response.ApiResponse;
 import com.example.todolist.service.UserService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;
@@ -31,7 +35,8 @@ public class UserController {
      * 如果發生異常，由全域例外處理器捕捉
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> register(@RequestBody RegisterDTO registerDTO){
+    public ResponseEntity<ApiResponse<UserResponseDTO>> register(
+    		@RequestBody RegisterDTO registerDTO){
         UserResponseDTO userResponseDTO = userService.register(registerDTO);
         return ResponseEntity.ok(ApiResponse.success("用戶註冊成功", userResponseDTO));
     }
@@ -42,9 +47,17 @@ public class UserController {
      * 如果驗證失敗，由全域例外處理器捕捉異常
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserResponseDTO>> login(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<ApiResponse<UserResponseDTO>> login(
+    		@RequestBody LoginDTO loginDTO,
+    		HttpSession session){
         UserResponseDTO userResponseDTO = userService.login(loginDTO);
+        session.setAttribute("user", userResponseDTO);
         return ResponseEntity.ok(ApiResponse.success("登入成功", userResponseDTO));
+    }
+    @PostMapping("logout")
+    public ResponseEntity<ApiResponse<Void>> logout(HttpSession session){
+    	session.invalidate();
+    	return ResponseEntity.ok(ApiResponse.success("登出成功", null));
     }
     
     /**

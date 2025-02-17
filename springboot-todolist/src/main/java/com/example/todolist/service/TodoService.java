@@ -10,16 +10,16 @@ import com.example.todolist.model.dto.TodoDTO;
 @Service
 public interface TodoService {
 	
-	//取得所有代辦事項
-	public List<TodoDTO> getAllTodos();
-	
-	//新增所有代辦事項
-	public TodoDTO createTodo(TodoDTO todoDTO);
-	
-	//更新代辦事項
-	public TodoDTO updateTodo(TodoDTO todoDTO) throws TodoNotFoundException;
-	
-	//刪除代辦事項
-	public void deleteTodo(Long id) throws TodoNotFoundException;
+	// 根據用戶ID獲取所有待辦事項
+    List<TodoDTO> getAllTodosByUserId(Long userId);
+    
+    // 創建待辦事項，需要指定用戶ID
+    TodoDTO createTodo(TodoDTO todoDTO, Long userId);
+    
+    // 更新待辦事項，需要驗證用戶ID
+    TodoDTO updateTodo(TodoDTO todoDTO, Long userId) throws TodoNotFoundException;
+    
+    // 刪除待辦事項，需要驗證用戶ID
+    void deleteTodo(Long id, Long userId) throws TodoNotFoundException;
 
 }

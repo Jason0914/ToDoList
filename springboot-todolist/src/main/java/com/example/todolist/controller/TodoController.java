@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.todolist.exception.TodoNotFoundException;
 import com.example.todolist.model.dto.TodoDTO;
+import com.example.todolist.model.dto.UserResponseDTO;
 import com.example.todolist.response.ApiResponse;
 import com.example.todolist.service.TodoService;
+
+import jakarta.servlet.http.HttpSession;
 
 /**
  * WEB API
@@ -44,21 +47,20 @@ public class TodoController {
    /**
     * 注入 TodoService 用於處理業務邏輯
     */
-   @Autowired
-   private TodoService todoService;
-
+	@Autowired
+    private TodoService todoService;
    /**
     * 獲取所有待辦事項（JSON 格式）
     * HTTP GET /todolist
     * 
     * @return ResponseEntity 包含 ApiResponse 和 HTTP 狀態
     */
-   @GetMapping
-   public ResponseEntity<ApiResponse<List<TodoDTO>>> getAllDtos() {
-       // 1. 調用 service 層獲取所有待辦事項
-       List<TodoDTO> todos = todoService.getAllTodos();
-       // 2. 包裝成統一的 API 回應格式並返回
-       return ResponseEntity.ok(ApiResponse.success("查詢成功", todos));
+   private Long getCurrentUserId(HttpSession session) {
+       UserResponseDTO user = (UserResponseDTO) session.getAttribute("user");
+       if (user == null) {
+           throw new RuntimeException("用戶未登入");
+       }
+       return user.getId();
    }
 
    /**
@@ -67,10 +69,11 @@ public class TodoController {
     * 
     * @return 待辦事項列表的字串表示
     */
-   @GetMapping("/string")
-   public String getAllDtosString() {
-       List<TodoDTO> todos = todoService.getAllTodos();
-       return todos.toString();
+   @GetMapping
+   public ResponseEntity<ApiResponse<List<TodoDTO>>> getAllTodos(HttpSession session) {
+       Long userId = getCurrentUserId(session);
+       List<TodoDTO> todos = todoService.getAllTodosByUserId(userId);
+       return ResponseEntity.ok(ApiResponse.success("查詢成功", todos));
    }
 
    /**
@@ -81,10 +84,11 @@ public class TodoController {
     * @return ResponseEntity 包含新增成功的待辦事項
     */
    @PostMapping
-   public ResponseEntity<ApiResponse<TodoDTO>> createTodo(@RequestBody TodoDTO todoDto) {
-       // 1. 調用 service 層創建新的待辦事項
-       TodoDTO createdTodoDTO = todoService.createTodo(todoDto);
-       // 2. 包裝成統一的 API 回應格式並返回
+   public ResponseEntity<ApiResponse<TodoDTO>> createTodo(
+           @RequestBody TodoDTO todoDto,
+           HttpSession session) {
+       Long userId = getCurrentUserId(session);
+       TodoDTO createdTodoDTO = todoService.createTodo(todoDto, userId);
        return ResponseEntity.ok(ApiResponse.success("新增成功", createdTodoDTO));
    }
 
@@ -98,18 +102,16 @@ public class TodoController {
        * @return ResponseEntity 包含更新後的待辦事項
        * @throws TodoNotFoundException 如果找不到指定 ID 的待辦事項
        */
-      @PutMapping("/{id}")
-      public ResponseEntity<ApiResponse<TodoDTO>> updateTodo(
-              @PathVariable Long id,    // 從 URL 路徑獲取 ID
-              @RequestBody TodoDTO todoDto  // 從請求體獲取更新內容
-      ) throws TodoNotFoundException {
-          // 設定要更新的 ID
-          todoDto.setId(id);
-          // 調用 service 層更新待辦事項
-          TodoDTO updatedTodoDTO = todoService.updateTodo(todoDto);
-          // 返回更新成功的回應
-          return ResponseEntity.ok(ApiResponse.success("修改成功", updatedTodoDTO));
-      }
+   @PutMapping("/{id}")
+   public ResponseEntity<ApiResponse<TodoDTO>> updateTodo(
+           @PathVariable Long id,
+           @RequestBody TodoDTO todoDto,
+           HttpSession session) throws TodoNotFoundException {
+       Long userId = getCurrentUserId(session);
+       todoDto.setId(id);
+       TodoDTO updatedTodoDTO = todoService.updateTodo(todoDto, userId);
+       return ResponseEntity.ok(ApiResponse.success("修改成功", updatedTodoDTO));
+   }
 
       /**
        * 刪除待辦事項
@@ -119,15 +121,14 @@ public class TodoController {
        * @return ResponseEntity 包含刪除成功的訊息
        * @throws TodoNotFoundException 如果找不到指定 ID 的待辦事項
        */
-      @DeleteMapping("/{id}")
-      public ResponseEntity<ApiResponse<Void>> deleteTodo(
-              @PathVariable Long id  // 從 URL 路徑獲取 ID
-      ) throws TodoNotFoundException {
-          // 調用 service 層刪除待辦事項
-          todoService.deleteTodo(id);
-          // 返回刪除成功的回應
-          return ResponseEntity.ok(ApiResponse.success("刪除成功", null));
-      }
+   @DeleteMapping("/{id}")
+   public ResponseEntity<ApiResponse<Void>> deleteTodo(
+           @PathVariable Long id,
+           HttpSession session) throws TodoNotFoundException {
+       Long userId = getCurrentUserId(session);
+       todoService.deleteTodo(id, userId);
+       return ResponseEntity.ok(ApiResponse.success("刪除成功", null));
+   }
 
       /**
        * 異常處理器
@@ -136,10 +137,9 @@ public class TodoController {
        * @param e 捕獲到的 TodoNotFoundException 異常
        * @return ResponseEntity 包含錯誤訊息
        */
-      @ExceptionHandler(TodoNotFoundException.class)
-      public ResponseEntity<ApiResponse<Void>> handlTodoRuntimeException(TodoNotFoundException e) {
-          // 返回 404 Not Found 狀態碼和錯誤訊息
-          return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                  .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
-      }
+   @ExceptionHandler(TodoNotFoundException.class)
+   public ResponseEntity<ApiResponse<Void>> handleTodoNotFoundException(TodoNotFoundException e) {
+       return ResponseEntity.status(HttpStatus.NOT_FOUND)
+               .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+   }
    }

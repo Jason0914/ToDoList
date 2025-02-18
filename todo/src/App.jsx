@@ -20,7 +20,7 @@ function NavBar() {
     <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
       <div className="container">
         <Link className="navbar-brand" to="/">
-          Todo App
+          Todo
         </Link>
         <button
           className="navbar-toggler"

@@ -24,5 +24,9 @@ public interface UserService {
 	//檢查信箱是否已存在
 	boolean isEmailExists(String email);
 	
+	void initiatePasswordReset(String email);
+	void validatePasswordResetToken(String token);
+	void resetPassword(String token,String newPassword);
+	
 
 }

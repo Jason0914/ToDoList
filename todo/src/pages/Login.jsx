@@ -67,6 +67,9 @@ function Login() {
                     required
                   />
                 </div>
+                <div className="mb-3 text-end">
+                  <Link to="/forgot-password">忘記密碼？</Link>
+                </div>
                 <button type="submit" className="btn btn-primary w-100">
                   登入
                 </button>

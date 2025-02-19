@@ -117,3 +117,48 @@ export const logoutUser = async () => {
     throw error;
   }
 };
+// 請求密碼重設
+export const requestPasswordReset = async (email) => {
+  try {
+    const response = await fetch(`${BASE_URL}/password-reset/request`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(email),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Password reset request error:", error);
+    throw error;
+  }
+};
+
+// 驗證重設令牌
+export const validateResetToken = async (token) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/password-reset/validate?token=${token}`
+    );
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Token validation error:", error);
+    throw error;
+  }
+};
+
+// 重設密碼
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/password-reset/reset?token=${token}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPassword),
+      }
+    );
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Password reset error:", error);
+    throw error;
+  }
+};

@@ -7,14 +7,14 @@ import com.example.todolist.model.entity.PasswordResetToken;
 import com.example.todolist.model.entity.User;
 import com.example.todolist.repository.PasswordResetTokenRepository;
 import com.example.todolist.repository.UserRepository;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -84,51 +84,65 @@ public class UserServiceImpl implements UserService {
     public boolean isEmailExists(String email) {
         return userRepository.existsByEmail(email);
     }
-    
+
     @Override
+    @Transactional
     public void initiatePasswordReset(String email) {
-    	User user = userRepository.findByEmail(email)
-    			.orElseThrow(() -> new RuntimeException("找不到此信箱關聯的帳號"));
-    	
-    	tokenRepository.deleteByUser_Id(user.getId());
-    	
-    	String token = UUID.randomUUID().toString();
-    	PasswordResetToken resetToken = new PasswordResetToken();
-        resetToken.setUser(user);
-        resetToken.setToken(token);
-        resetToken.setExpiryDate(LocalDateTime.now().plusHours(24));
-        
-        tokenRepository.save(resetToken);
-        
-        emailService.sendPasswordResetEmail(user.getEmail(), token);
-    }
-        
-        @Override
-        public void validatePasswordResetToken(String token) {
-        	PasswordResetToken resetToken = tokenRepository.findByToken(token);
-        	if(resetToken == null) {
-        		throw new RuntimeException("無效的重設連結");
-        	}
-        	
-        	if(resetToken.isExpired()) {
-        		tokenRepository.delete(resetToken);
-        		throw new RuntimeException("重設連結已過期");
-        	}
+        try {
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("找不到此信箱關聯的帳號"));
+                
+            // 刪除該用戶現有的重設令牌
+            tokenRepository.deleteByUser_Id(user.getId());
+            
+            // 創建新的重設令牌
+            String token = UUID.randomUUID().toString();
+            PasswordResetToken resetToken = new PasswordResetToken();
+            resetToken.setUser(user);
+            resetToken.setToken(token);
+            resetToken.setExpiryDate(LocalDateTime.now().plusHours(24));
+            
+            tokenRepository.save(resetToken);
+            
+            // 發送重設密碼郵件
+            emailService.sendPasswordResetEmail(user.getEmail(), token);
+        } catch (Exception e) {
+            throw new RuntimeException("密碼重設郵件發送失敗: " + e.getMessage());
         }
-        @Override
-        public void resetPassword(String token,String newPassword) {
-        	PasswordResetToken resetToken = tokenRepository.findByToken(token);
-        	if(resetToken == null || resetToken.isExpired()) {
-        		throw new RuntimeException("無效的重設連結或重設連結已過期");
-        		
-        	}
-        	User user =resetToken.getUser();
-        	user.setPassword(passwordEncoder.encode(newPassword));
-        	userRepository.save(user);
-        	
-        	tokenRepository.delete(resetToken);
-        
-        
     }
-	
+
+    @Override
+    @Transactional
+    public void validatePasswordResetToken(String token) {
+        PasswordResetToken resetToken = tokenRepository.findByToken(token);
+        if (resetToken == null) {
+            throw new RuntimeException("無效的重設連結");
+        }
+        
+        if (resetToken.isExpired()) {
+            tokenRepository.delete(resetToken);
+            throw new RuntimeException("重設連結已過期");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = tokenRepository.findByToken(token);
+        if (resetToken == null || resetToken.isExpired()) {
+            throw new RuntimeException("無效的重設連結");
+        }
+        
+        User user = resetToken.getUser();
+        
+        // 檢查新密碼是否與舊密碼相同
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new RuntimeException("新密碼不能與舊密碼相同");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        
+        tokenRepository.delete(resetToken);
+    }
 }

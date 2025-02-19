@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class TodoDTO {
 	private Long id;
 	private String text;
-	private Boolean completed;
+	private Boolean completed= false;
 
 }

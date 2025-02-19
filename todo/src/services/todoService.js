@@ -22,11 +22,10 @@ const fetchWithCredentials = async (url, options = {}) => {
     });
 
     if (!response.ok) {
-      if (response.status === 401) {
-        localStorage.removeItem("user");
-        window.location.href = "/login";
-      }
-      throw new Error("HTTP error! status: " + response.status);
+      const errorData = await response.json().catch(() => null);
+      throw new Error(
+        errorData?.message || `HTTP error! status: ${response.status}`
+      );
     }
 
     const result = await response.json();

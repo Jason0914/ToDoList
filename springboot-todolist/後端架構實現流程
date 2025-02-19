@@ -39,7 +39,11 @@ Controller：處理請求/回應
 Config：配置設定
 
 =============================筆記區====================================
-
+@Data //自動生成getter/setter方法，toString()，equals、hashCode方法
+@AllArgsConstructor //自動生成包含所有參數的建構子
+@NoArgsConstructor //自動生成無參數的建構子
+@Entity //標記這個類別是一個實體類，會對應到資料庫的表格
+@Table(name="todo")//預設名稱，指定資料表名稱
 JPA (Java Persistence API) 相關的註解：
 
 @Entity: 標記這個類別是一個實體類，會對應到資料庫的表格

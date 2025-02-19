@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.example.todolist.exception.TodoNotFoundException;
 import com.example.todolist.model.dto.TodoDTO;
 import com.example.todolist.model.entity.Todo;
@@ -25,6 +26,7 @@ public class TodoServiceImpl implements TodoService {
     private ModelMapper modelMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<TodoDTO> getAllTodosByUserId(Long userId) {
         List<Todo> todos = todoRepository.findByUserId(userId);
         return todos.stream()
@@ -33,17 +35,22 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    @Transactional
     public TodoDTO createTodo(TodoDTO todoDTO, Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("用戶不存在"));
             
-        Todo todo = modelMapper.map(todoDTO, Todo.class);
+        Todo todo = new Todo();
+        todo.setText(todoDTO.getText());
+        todo.setCompleted(false);
         todo.setUser(user);
+        
         Todo savedTodo = todoRepository.save(todo);
         return modelMapper.map(savedTodo, TodoDTO.class);
     }
 
     @Override
+    @Transactional
     public TodoDTO updateTodo(TodoDTO todoDTO, Long userId) throws TodoNotFoundException {
         Todo todo = todoRepository.findById(todoDTO.getId())
             .orElseThrow(() -> new TodoNotFoundException("查無資料"));
@@ -52,12 +59,15 @@ public class TodoServiceImpl implements TodoService {
             throw new TodoNotFoundException("無權限修改此待辦事項");
         }
         
-        modelMapper.map(todoDTO, todo);
+        todo.setText(todoDTO.getText());
+        todo.setCompleted(todoDTO.getCompleted());
+        
         Todo updatedTodo = todoRepository.save(todo);
         return modelMapper.map(updatedTodo, TodoDTO.class);
     }
 
     @Override
+    @Transactional
     public void deleteTodo(Long id, Long userId) throws TodoNotFoundException {
         Todo todo = todoRepository.findById(id)
             .orElseThrow(() -> new TodoNotFoundException("查無資料"));

@@ -1,20 +1,24 @@
 import React from "react";
 
-const TodoItem = ({ todo, onToggleCompletion, onDelete }) => {
+const TodoItem = ({ todo, index, onToggleCompletion, onDelete }) => {
   return (
     <li
       className={`list-group-item d-flex justify-content-between align-items-center ${
         todo.completed ? "list-group-item-success" : ""
       }`}
     >
-      {todo.id}
-
-      <span
-        style={{ textDecoration: todo.completed ? "line-through" : "none" }}
-        onClick={() => onToggleCompletion(todo.id)}
-      >
-        {todo.text}
-      </span>
+      <div className="d-flex align-items-center">
+        <span className="me-3 text-secondary">#{index}</span>
+        <span
+          style={{
+            textDecoration: todo.completed ? "line-through" : "none",
+            cursor: "pointer",
+          }}
+          onClick={() => onToggleCompletion(todo.id)}
+        >
+          {todo.text}
+        </span>
+      </div>
       <div>
         <input
           className="me-2"

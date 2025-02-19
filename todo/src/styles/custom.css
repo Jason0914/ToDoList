@@ -1,0 +1,133 @@
+/* 全局樣式 */
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+/* 導航欄樣式 */
+.navbar {
+  background: linear-gradient(to right, #36d1dc, #5b86e5) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand,
+.nav-link {
+  color: white !important;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 卡片樣式 */
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+/* 按鈕樣式 */
+.btn-primary {
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(to right, #00f2fe 0%, #4facfe 100%);
+}
+
+/* 輸入框樣式 */
+.form-control {
+  border-radius: 10px;
+  border: 2px solid #eef2f7;
+  padding: 12px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+  border-color: #4facfe;
+}
+
+/* TodoList 樣式 */
+.list-group-item {
+  border-radius: 10px !important;
+  margin-bottom: 8px;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-group-item.list-group-item-success {
+  background: linear-gradient(to right, #84fab0 0%, #8fd3f4 100%);
+  color: white;
+}
+
+/* 警告訊息樣式 */
+.alert {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+  background: linear-gradient(to right, #84fab0 0%, #8fd3f4 100%);
+  color: white;
+}
+
+.alert-danger {
+  background: linear-gradient(to right, #ff758c 0%, #ff7eb3 100%);
+  color: white;
+}
+
+/* 首頁特殊樣式 */
+.home-header {
+  text-align: center;
+  padding: 4rem 0;
+  color: #2d3436;
+}
+
+.home-header h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(to right, #36d1dc, #5b86e5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 動畫效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}

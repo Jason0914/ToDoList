@@ -122,10 +122,24 @@ export const requestPasswordReset = async (email) => {
   try {
     const response = await fetch(`${BASE_URL}/password-reset/request`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(email),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ email }),
     });
-    return handleResponse(response);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "重設密碼請求失敗");
+    }
+
+    const result = await response.json();
+    if (result.status === 200) {
+      return result.data;
+    }
+    throw new Error(result.message || "重設密碼請求失敗");
   } catch (error) {
     console.error("Password reset request error:", error);
     throw error;
@@ -136,9 +150,19 @@ export const requestPasswordReset = async (email) => {
 export const validateResetToken = async (token) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/password-reset/validate?token=${token}`
+      `${BASE_URL}/password-reset/validate?token=${token}`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+      }
     );
-    return handleResponse(response);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "驗證令牌失敗");
+    }
+    return await response.json();
   } catch (error) {
     console.error("Token validation error:", error);
     throw error;
@@ -152,11 +176,19 @@ export const resetPassword = async (token, newPassword) => {
       `${BASE_URL}/password-reset/reset?token=${token}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPassword),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ password: newPassword }),
       }
     );
-    return handleResponse(response);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "重設密碼失敗");
+    }
+    return await response.json();
   } catch (error) {
     console.error("Password reset error:", error);
     throw error;

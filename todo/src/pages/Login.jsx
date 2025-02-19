@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/userService";
-import { useAuth } from "../contexts/AuthContext"; // 引入 useAuth
+import { useAuth } from "../contexts/AuthContext";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -10,7 +10,7 @@ function Login() {
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { login } = useAuth(); // 使用 AuthContext 的 login 方法
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -23,9 +23,7 @@ function Login() {
     e.preventDefault();
     try {
       const userData = await loginUser(formData);
-      // 使用 AuthContext 的 login 方法更新全局狀態
       login(userData);
-      // 登入成功後導航到待辦事項頁面
       navigate("/todo");
     } catch (err) {
       setError(err.message);

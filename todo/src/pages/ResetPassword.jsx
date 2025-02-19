@@ -33,9 +33,24 @@ function ResetPassword() {
       });
   }, [token]);
 
+  const validatePassword = (password) => {
+    // 至少包含1個大寫字母、1個小寫字母、1個數字，且長度至少為8
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setMessage("");
 
+    // 檢查密碼格式
+    if (!validatePassword(password)) {
+      setError("密碼必須至少包含8個字符，包括大寫字母、小寫字母和數字");
+      return;
+    }
+
+    // 檢查密碼是否相同
     if (password !== confirmPassword) {
       setError("兩次輸入的密碼不相同");
       return;
@@ -44,9 +59,10 @@ function ResetPassword() {
     try {
       await resetPassword(token, password);
       setMessage("密碼重設成功！");
+      // 3秒後重定向到登入頁面
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 3000);
     } catch (err) {
       setError(err.message);
     }
@@ -90,8 +106,10 @@ function ResetPassword() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength="6"
                   />
+                  <small className="text-muted">
+                    密碼必須至少包含8個字符，包括大寫字母、小寫字母和數字
+                  </small>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">確認新密碼</label>
@@ -101,7 +119,6 @@ function ResetPassword() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    minLength="6"
                   />
                 </div>
                 <button type="submit" className="btn btn-primary w-100">

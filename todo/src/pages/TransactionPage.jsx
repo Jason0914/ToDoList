@@ -27,6 +27,7 @@ function TransactionPage() {
         getAllTransactions(), // 改用 getAllTransactions
         getTransactionsSummary(dateRange.start, dateRange.end),
       ]);
+      console.log("Transactions Data:", transactionsData);
       setTransactions(transactionsData);
       setSummary(summaryData);
     } catch (err) {
@@ -61,7 +62,7 @@ function TransactionPage() {
         <div className="col-md-6">
           <TransactionSummary summary={summary} />
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6" style={{ minHeight: "650px" }}>
           <TransactionChart transactions={transactions} />
         </div>
       </div>

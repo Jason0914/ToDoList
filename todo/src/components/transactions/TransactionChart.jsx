@@ -25,51 +25,77 @@ const COLORS = [
 
 const TransactionChart = ({ transactions }) => {
   const chartData = useMemo(() => {
-    // 按類別分組統計
-    const categoryStats = transactions.reduce((acc, curr) => {
-      const key = curr.category;
-      if (!acc[key]) {
-        acc[key] = {
+    if (!transactions || transactions.length === 0) {
+      return [];
+    }
+
+    const categoryStats = {};
+    transactions.forEach((transaction) => {
+      const key = transaction.category || "其他";
+      if (!categoryStats[key]) {
+        categoryStats[key] = {
           category: key,
           收入: 0,
           支出: 0,
         };
       }
-      if (curr.type === "INCOME") {
-        acc[key].收入 += curr.amount;
+
+      const amount = Number(transaction.amount);
+      if (transaction.type === "INCOME") {
+        categoryStats[key].收入 += amount;
       } else {
-        acc[key].支出 += curr.amount;
+        categoryStats[key].支出 += amount;
       }
-      return acc;
-    }, {});
+    });
 
     return Object.values(categoryStats);
   }, [transactions]);
 
   const pieData = useMemo(() => {
-    const expensesByCategory = transactions
-      .filter((t) => t.type === "EXPENSE")
-      .reduce((acc, curr) => {
-        if (!acc[curr.category]) {
-          acc[curr.category] = 0;
-        }
-        acc[curr.category] += curr.amount;
-        return acc;
-      }, {});
+    if (!transactions || transactions.length === 0) {
+      return [];
+    }
 
-    return Object.entries(expensesByCategory).map(([name, value]) => ({
-      name,
-      value,
-    }));
+    const expensesByCategory = {};
+    transactions
+      .filter((t) => t.type === "EXPENSE")
+      .forEach((t) => {
+        const category = t.category || "其他";
+        if (!expensesByCategory[category]) {
+          expensesByCategory[category] = 0;
+        }
+        expensesByCategory[category] += Number(t.amount);
+      });
+
+    return Object.entries(expensesByCategory)
+      .map(([name, value]) => ({
+        name,
+        value,
+      }))
+      .sort((a, b) => b.value - a.value);
   }, [transactions]);
 
+  if (!transactions || transactions.length === 0) {
+    return (
+      <div className="card h-100">
+        <div className="card-body text-center">
+          <h5 className="card-title mb-4">收支分析</h5>
+          <p>尚無交易資料</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="card">
+    <div className="card h-100">
       <div className="card-body">
         <h5 className="card-title mb-4">收支分析</h5>
-        <div style={{ height: "300px" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
+        <div style={{ width: "100%", height: "300px", position: "relative" }}>
+          <ResponsiveContainer>
+            <BarChart
+              data={chartData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="category" />
               <YAxis />
@@ -90,20 +116,21 @@ const TransactionChart = ({ transactions }) => {
         </div>
 
         <h5 className="card-title mt-4 mb-4">支出分布</h5>
-        <div style={{ height: "300px" }}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div style={{ width: "100%", height: "300px", position: "relative" }}>
+          <ResponsiveContainer>
             <PieChart>
               <Pie
                 data={pieData}
                 cx="50%"
                 cy="50%"
-                labelLine={true}
+                innerRadius={0}
+                outerRadius={80}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="value"
                 label={({ name, percent }) =>
                   `${name} (${(percent * 100).toFixed(0)}%)`
                 }
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
               >
                 {pieData.map((entry, index) => (
                   <Cell

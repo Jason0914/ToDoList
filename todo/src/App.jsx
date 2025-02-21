@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import TodoPage from "./pages/TodoPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import TransactionPage from "./pages/TransactionPage";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
@@ -44,6 +45,11 @@ function NavBar() {
                 <li className="nav-item">
                   <Link className="nav-link" to="/todo">
                     待辦事項
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/transactions">
+                    記帳
                   </Link>
                 </li>
                 <li className="nav-item">
@@ -96,6 +102,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <TodoPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute>
+                  <TransactionPage />
                 </ProtectedRoute>
               }
             />

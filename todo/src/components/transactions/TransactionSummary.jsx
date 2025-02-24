@@ -1,19 +1,64 @@
 import React from "react";
 
-const TransactionSummary = ({ summary }) => {
-  const formatAmount = (amount) => {
-    return new Intl.NumberFormat("zh-TW", {
-      style: "currency",
-      currency: "TWD",
-      minimumFractionDigits: 0,
-    }).format(amount || 0);
+const TransactionSummary = ({ transactions, isLoading }) => {
+  console.log("TransactionSummary received transactions:", transactions);
+
+  // 直接使用交易數據計算總額
+  const calculateSummary = () => {
+    if (!transactions || transactions.length === 0) {
+      return {
+        totalIncome: 0,
+        totalExpense: 0,
+        balance: 0,
+      };
+    }
+
+    const totalIncome = transactions
+      .filter((t) => t.type === "INCOME")
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    const totalExpense = transactions
+      .filter((t) => t.type === "EXPENSE")
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+    return {
+      totalIncome,
+      totalExpense,
+      balance: totalIncome - totalExpense,
+    };
   };
 
-  if (!summary) {
+  const summary = calculateSummary();
+  console.log("Calculated summary:", summary);
+
+  const formatAmount = (amount) => {
+    try {
+      // 確保 amount 是數字，如果不是則使用默認值 0
+      const numAmount =
+        amount !== null && amount !== undefined ? Number(amount) : 0;
+
+      return new Intl.NumberFormat("zh-TW", {
+        style: "currency",
+        currency: "TWD",
+        minimumFractionDigits: 0,
+      }).format(numAmount);
+    } catch (error) {
+      console.error("Error formatting amount:", error, "Value was:", amount);
+      return "NT$0"; // 發生錯誤時的默認值
+    }
+  };
+
+  // 處理加載狀態
+  if (isLoading) {
     return (
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">載入中...</h5>
+          <div className="text-center mt-3">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
         </div>
       </div>
     );

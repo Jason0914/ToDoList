@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   getAllTransactions,
   getTransactionsByDateRange,
-  getTransactionsSummary,
 } from "../services/transactionService";
 import TransactionList from "../components/transactions/TransactionList";
 import TransactionForm from "../components/transactions/TransactionForm";
@@ -11,28 +10,45 @@ import TransactionChart from "../components/transactions/TransactionChart";
 
 function TransactionPage() {
   const [transactions, setTransactions] = useState([]);
-  const [summary, setSummary] = useState(null);
   const [dateRange, setDateRange] = useState({
     start: new Date(new Date().setDate(1)), // 當月第一天
     end: new Date(),
   });
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  // 加載交易記錄和統計數據
+  // 加載交易記錄
   const loadData = async () => {
     try {
+      setIsLoading(true);
       setError("");
-      const [transactionsData, summaryData] = await Promise.all([
-        getAllTransactions(), // 改用 getAllTransactions
-        getTransactionsSummary(dateRange.start, dateRange.end),
-      ]);
+
+      // 確保日期格式正確
+      const startDate = new Date(dateRange.start);
+      const endDate = new Date(dateRange.end);
+
+      console.log("Loading data with date range:", {
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+
+      // 只需獲取交易數據，不再獲取摘要數據
+      const transactionsData = await getAllTransactions();
       console.log("Transactions Data:", transactionsData);
-      setTransactions(transactionsData);
-      setSummary(summaryData);
+
+      // 過濾指定日期範圍內的交易數據
+      const filteredTransactions = transactionsData.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        return transactionDate >= startDate && transactionDate <= endDate;
+      });
+
+      setTransactions(filteredTransactions || []);
     } catch (err) {
       console.error("Error loading data:", err);
-      setError(err.message);
+      setError(`加載數據時出錯: ${err.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,7 +76,10 @@ function TransactionPage() {
 
       <div className="row mb-4">
         <div className="col-md-6">
-          <TransactionSummary summary={summary} />
+          <TransactionSummary
+            transactions={transactions}
+            isLoading={isLoading}
+          />
         </div>
         <div className="col-md-6" style={{ minHeight: "650px" }}>
           <TransactionChart transactions={transactions} />

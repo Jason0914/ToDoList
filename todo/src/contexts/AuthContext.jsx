@@ -1,4 +1,4 @@
-// src/contexts/AuthContext.jsx
+// AuthContext.jsx 的修改建議
 import { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext(null);
@@ -6,14 +6,22 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // 添加加載狀態
 
   useEffect(() => {
     // 從localStorage檢查用戶狀態
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+        localStorage.removeItem("user"); // 清除無效數據
+      }
     }
+    setLoading(false); // 設置加載完成
   }, []);
 
   const login = (userData) => {
@@ -30,7 +38,14 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, setIsAuthenticated }}
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        setIsAuthenticated,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -18,6 +18,8 @@ const fetchWithCredentials = async (url, options = {}) => {
     }
 
     const result = await response.json();
+    console.log("API Response:", result); // 添加日誌以查看 API 的完整響應
+
     if (result.status === 200) {
       return result.data;
     }
@@ -30,26 +32,71 @@ const fetchWithCredentials = async (url, options = {}) => {
 
 // 獲取所有交易記錄
 export const getAllTransactions = () => {
-  return fetchWithCredentials(BASE_URL);
+  console.log("Fetching all transactions");
+  return fetchWithCredentials(BASE_URL)
+    .then((data) => data || [])
+    .catch((error) => {
+      console.error("Error fetching transactions:", error);
+      return [];
+    });
 };
 
 // 獲取指定日期範圍的交易記錄
 export const getTransactionsByDateRange = (start, end) => {
+  console.log("Fetching transactions by date range:", { start, end });
   return fetchWithCredentials(
     `${BASE_URL}/range?start=${start.toISOString()}&end=${end.toISOString()}`
-  );
+  )
+    .then((data) => data || [])
+    .catch((error) => {
+      console.error("Error fetching transactions by date range:", error);
+      return [];
+    });
 };
 
 // 獲取指定類別的交易記錄
 export const getTransactionsByCategory = (category) => {
-  return fetchWithCredentials(`${BASE_URL}/category/${category}`);
+  return fetchWithCredentials(`${BASE_URL}/category/${category}`)
+    .then((data) => data || [])
+    .catch((error) => {
+      console.error("Error fetching transactions by category:", error);
+      return [];
+    });
 };
 
 // 獲取交易統計
 export const getTransactionsSummary = (start, end) => {
-  return fetchWithCredentials(
-    `${BASE_URL}/summary?start=${start.toISOString()}&end=${end.toISOString()}`
-  );
+  console.log("Fetching transaction summary for:", {
+    startIso: start.toISOString(),
+    endIso: end.toISOString(),
+  });
+
+  // 確保傳入的是有效日期格式
+  const validStart = start instanceof Date ? start : new Date(start);
+  const validEnd = end instanceof Date ? end : new Date(end);
+
+  const url = `${BASE_URL}/summary?start=${validStart.toISOString()}&end=${validEnd.toISOString()}`;
+  console.log("Summary request URL:", url);
+
+  return fetchWithCredentials(url)
+    .then((data) => {
+      console.log("Transaction summary data received:", data);
+      // 確保返回數據有預期的結構，如果沒有則提供默認值
+      return {
+        totalIncome: data?.totalIncome || 0,
+        totalExpense: data?.totalExpense || 0,
+        balance: data?.balance || 0,
+      };
+    })
+    .catch((error) => {
+      console.error("Error fetching summary:", error);
+      // 返回默認值而不是拋出錯誤，避免 UI 中斷
+      return {
+        totalIncome: 0,
+        totalExpense: 0,
+        balance: 0,
+      };
+    });
 };
 
 // 創建新交易記錄

@@ -111,13 +111,15 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal totalExpense = BigDecimal.ZERO;
 
         for (Object[] row : summary) {
-            Transaction.TransactionType type = (Transaction.TransactionType) row[0];
-            BigDecimal amount = (BigDecimal) row[1];
-            
-            if (type == Transaction.TransactionType.INCOME) {
-                totalIncome = amount;
-            } else {
-                totalExpense = amount;
+            if (row[0] != null && row[1] != null) {
+                Transaction.TransactionType type = (Transaction.TransactionType) row[0];
+                BigDecimal amount = (BigDecimal) row[1];
+                
+                if (type == Transaction.TransactionType.INCOME) {
+                    totalIncome = totalIncome.add(amount);
+                } else {
+                    totalExpense = totalExpense.add(amount);
+                }
             }
         }
 

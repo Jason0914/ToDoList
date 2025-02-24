@@ -9,7 +9,8 @@ import TransactionSummary from "../components/transactions/TransactionSummary";
 import TransactionChart from "../components/transactions/TransactionChart";
 
 function TransactionPage() {
-  const [transactions, setTransactions] = useState([]);
+  const [allTransactions, setAllTransactions] = useState([]); // 存儲所有交易
+  const [filteredTransactions, setFilteredTransactions] = useState([]); // 過濾後的交易
   const [dateRange, setDateRange] = useState({
     start: new Date(new Date().setDate(1)), // 當月第一天
     end: new Date(),
@@ -18,47 +19,99 @@ function TransactionPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // 加載交易記錄
+  // 加載所有交易記錄
   const loadData = async () => {
     try {
       setIsLoading(true);
       setError("");
 
-      // 確保日期格式正確
-      const startDate = new Date(dateRange.start);
-      const endDate = new Date(dateRange.end);
-
-      console.log("Loading data with date range:", {
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      });
-
-      // 只需獲取交易數據，不再獲取摘要數據
+      console.log("Loading all transactions data");
       const transactionsData = await getAllTransactions();
-      console.log("Transactions Data:", transactionsData);
+      console.log("All Transactions Data:", transactionsData);
+      setAllTransactions(transactionsData || []);
 
-      // 過濾指定日期範圍內的交易數據
-      const filteredTransactions = transactionsData.filter((transaction) => {
-        const transactionDate = new Date(transaction.date);
-        return transactionDate >= startDate && transactionDate <= endDate;
-      });
-
-      setTransactions(filteredTransactions || []);
+      // 立即進行篩選
+      filterTransactionsByDate(transactionsData || [], dateRange);
     } catch (err) {
       console.error("Error loading data:", err);
       setError(`加載數據時出錯: ${err.message}`);
+      setAllTransactions([]);
+      setFilteredTransactions([]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 根據日期範圍篩選交易
+  const filterTransactionsByDate = (transactions, range) => {
+    console.log("Filtering transactions by date range:", range);
+
+    // 確保日期是有效的 Date 對象
+    const startDate = new Date(range.start);
+    const endDate = new Date(range.end);
+
+    // 設置日期的時分秒
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    console.log("Using date range for filtering:", {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    });
+
+    const filtered = transactions.filter((transaction) => {
+      // 轉換交易日期字符串為 Date 對象
+      const transactionDate = new Date(transaction.date);
+
+      // 檢查日期是否在範圍內
+      const isInRange =
+        transactionDate >= startDate && transactionDate <= endDate;
+
+      return isInRange;
+    });
+
+    console.log(
+      `Filtered ${filtered.length} out of ${transactions.length} transactions`
+    );
+    setFilteredTransactions(filtered);
+  };
+
+  // 日期範圍變化時重新篩選
+  useEffect(() => {
+    if (allTransactions.length > 0) {
+      filterTransactionsByDate(allTransactions, dateRange);
+    }
+  }, [dateRange]);
+
+  // 首次加載和日期範圍變化時
   useEffect(() => {
     loadData();
-  }, [dateRange]); // 監聽 dateRange 變化
+  }, []);
 
   const handleFormSubmit = async () => {
     setIsFormOpen(false);
     await loadData(); // 重新加載數據
+  };
+
+  // 處理日期變更
+  const handleDateChange = (field, value) => {
+    const newDate = new Date(value);
+
+    // 如果日期無效，不進行更新
+    if (isNaN(newDate.getTime())) {
+      console.error("Invalid date:", value);
+      return;
+    }
+
+    setDateRange((prevRange) => {
+      const newRange = {
+        ...prevRange,
+        [field]: newDate,
+      };
+
+      console.log(`Date ${field} changed to:`, newDate.toISOString());
+      return newRange;
+    });
   };
 
   return (
@@ -77,12 +130,12 @@ function TransactionPage() {
       <div className="row mb-4">
         <div className="col-md-6">
           <TransactionSummary
-            transactions={transactions}
+            transactions={filteredTransactions}
             isLoading={isLoading}
           />
         </div>
         <div className="col-md-6" style={{ minHeight: "650px" }}>
-          <TransactionChart transactions={transactions} />
+          <TransactionChart transactions={filteredTransactions} />
         </div>
       </div>
 
@@ -94,12 +147,7 @@ function TransactionPage() {
               className="form-control d-inline-block me-2"
               style={{ width: "auto" }}
               value={dateRange.start.toISOString().split("T")[0]}
-              onChange={(e) =>
-                setDateRange({
-                  ...dateRange,
-                  start: new Date(e.target.value),
-                })
-              }
+              onChange={(e) => handleDateChange("start", e.target.value)}
             />
             <span className="me-2">至</span>
             <input
@@ -107,12 +155,7 @@ function TransactionPage() {
               className="form-control d-inline-block me-2"
               style={{ width: "auto" }}
               value={dateRange.end.toISOString().split("T")[0]}
-              onChange={(e) =>
-                setDateRange({
-                  ...dateRange,
-                  end: new Date(e.target.value),
-                })
-              }
+              onChange={(e) => handleDateChange("end", e.target.value)}
             />
           </div>
           <button
@@ -126,7 +169,10 @@ function TransactionPage() {
 
       <div className="row">
         <div className="col">
-          <TransactionList transactions={transactions} onUpdate={loadData} />
+          <TransactionList
+            transactions={filteredTransactions}
+            onUpdate={loadData}
+          />
         </div>
       </div>
 

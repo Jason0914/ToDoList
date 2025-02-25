@@ -1,9 +1,26 @@
 import React from "react";
 
+/**
+ * 交易統計摘要組件
+ *
+ * 顯示交易記錄的總收入、總支出和結餘。
+ * 提供數據載入中的狀態顯示。
+ *
+ * @param {Object} props - 組件屬性
+ * @param {Array} props.transactions - 交易記錄數組
+ * @param {boolean} props.isLoading - 數據載入狀態
+ * @returns {JSX.Element} 交易統計摘要卡片
+ */
 const TransactionSummary = ({ transactions, isLoading }) => {
   console.log("TransactionSummary received transactions:", transactions);
 
-  // 直接使用交易數據計算總額
+  /**
+   * 計算交易統計數據
+   *
+   * 從交易記錄中計算總收入、總支出和結餘
+   *
+   * @returns {Object} 包含 totalIncome, totalExpense 和 balance 的統計對象
+   */
   const calculateSummary = () => {
     if (!transactions || transactions.length === 0) {
       return {
@@ -13,14 +30,17 @@ const TransactionSummary = ({ transactions, isLoading }) => {
       };
     }
 
+    // 計算總收入
     const totalIncome = transactions
       .filter((t) => t.type === "INCOME")
       .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+    // 計算總支出
     const totalExpense = transactions
       .filter((t) => t.type === "EXPENSE")
       .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
+    // 計算結餘
     return {
       totalIncome,
       totalExpense,
@@ -28,9 +48,17 @@ const TransactionSummary = ({ transactions, isLoading }) => {
     };
   };
 
+  // 獲取統計數據
   const summary = calculateSummary();
   console.log("Calculated summary:", summary);
 
+  /**
+   * 格式化金額
+   * 將數字轉換為貨幣格式
+   *
+   * @param {number} amount - 金額數值
+   * @returns {string} 格式化後的金額字符串
+   */
   const formatAmount = (amount) => {
     try {
       // 確保 amount 是數字，如果不是則使用默認值 0
@@ -48,7 +76,7 @@ const TransactionSummary = ({ transactions, isLoading }) => {
     }
   };
 
-  // 處理加載狀態
+  // 載入中狀態顯示
   if (isLoading) {
     return (
       <div className="card">
@@ -64,11 +92,13 @@ const TransactionSummary = ({ transactions, isLoading }) => {
     );
   }
 
+  // 統計數據顯示
   return (
     <div className="card">
       <div className="card-body">
         <h5 className="card-title mb-4">收支統計</h5>
         <div className="row g-3">
+          {/* 總收入 */}
           <div className="col-12">
             <div className="d-flex justify-content-between align-items-center">
               <span>總收入：</span>
@@ -77,6 +107,8 @@ const TransactionSummary = ({ transactions, isLoading }) => {
               </span>
             </div>
           </div>
+
+          {/* 總支出 */}
           <div className="col-12">
             <div className="d-flex justify-content-between align-items-center">
               <span>總支出：</span>
@@ -85,6 +117,8 @@ const TransactionSummary = ({ transactions, isLoading }) => {
               </span>
             </div>
           </div>
+
+          {/* 結餘 */}
           <div className="col-12">
             <hr />
             <div className="d-flex justify-content-between align-items-center">

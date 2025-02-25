@@ -13,6 +13,10 @@ import {
   Cell,
 } from "recharts";
 
+/**
+ * 圖表顏色常量
+ * 用於設置餅圖的不同扇區顏色
+ */
 const COLORS = [
   "#0088FE",
   "#00C49F",
@@ -23,13 +27,30 @@ const COLORS = [
   "#ffc658",
 ];
 
+/**
+ * 交易圖表組件
+ *
+ * 提供交易數據的圖形化展示，包括按類別的柱狀圖和支出分布的餅圖。
+ * 使用 Recharts 庫實現響應式圖表。
+ *
+ * @param {Object} props - 組件屬性
+ * @param {Array} props.transactions - 交易記錄數組
+ * @returns {JSX.Element} 交易圖表卡片
+ */
 const TransactionChart = ({ transactions }) => {
+  /**
+   * 處理柱狀圖數據
+   *
+   * 將交易數據按類別分組，計算每個類別的收入和支出總額
+   */
   const chartData = useMemo(() => {
     if (!transactions || transactions.length === 0) {
       return [];
     }
 
     const categoryStats = {};
+
+    // 遍歷所有交易記錄，按類別統計收入和支出
     transactions.forEach((transaction) => {
       const key = transaction.category || "其他";
       if (!categoryStats[key]) {
@@ -40,6 +61,7 @@ const TransactionChart = ({ transactions }) => {
         };
       }
 
+      // 根據交易類型累加金額
       const amount = Number(transaction.amount);
       if (transaction.type === "INCOME") {
         categoryStats[key].收入 += amount;
@@ -51,12 +73,19 @@ const TransactionChart = ({ transactions }) => {
     return Object.values(categoryStats);
   }, [transactions]);
 
+  /**
+   * 處理餅圖數據
+   *
+   * 將支出數據按類別分組，計算每個類別的支出總額
+   */
   const pieData = useMemo(() => {
     if (!transactions || transactions.length === 0) {
       return [];
     }
 
     const expensesByCategory = {};
+
+    // 只處理支出類型的交易
     transactions
       .filter((t) => t.type === "EXPENSE")
       .forEach((t) => {
@@ -67,6 +96,7 @@ const TransactionChart = ({ transactions }) => {
         expensesByCategory[category] += Number(t.amount);
       });
 
+    // 轉換為餅圖所需的數據格式並按金額降序排序
     return Object.entries(expensesByCategory)
       .map(([name, value]) => ({
         name,
@@ -75,6 +105,7 @@ const TransactionChart = ({ transactions }) => {
       .sort((a, b) => b.value - a.value);
   }, [transactions]);
 
+  // 無數據時顯示提示信息
   if (!transactions || transactions.length === 0) {
     return (
       <div className="card h-100">
@@ -89,6 +120,7 @@ const TransactionChart = ({ transactions }) => {
   return (
     <div className="card h-100">
       <div className="card-body">
+        {/* 按類別的收支柱狀圖 */}
         <h5 className="card-title mb-4">收支分析</h5>
         <div style={{ width: "100%", height: "300px", position: "relative" }}>
           <ResponsiveContainer>
@@ -115,6 +147,7 @@ const TransactionChart = ({ transactions }) => {
           </ResponsiveContainer>
         </div>
 
+        {/* 支出分布餅圖 */}
         <h5 className="card-title mt-4 mb-4">支出分布</h5>
         <div style={{ width: "100%", height: "300px", position: "relative" }}>
           <ResponsiveContainer>
@@ -132,6 +165,7 @@ const TransactionChart = ({ transactions }) => {
                   `${name} (${(percent * 100).toFixed(0)}%)`
                 }
               >
+                {/* 為每個扇區設置不同顏色 */}
                 {pieData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}

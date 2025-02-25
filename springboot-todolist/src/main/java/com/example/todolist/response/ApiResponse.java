@@ -1,8 +1,3 @@
-/**
-* API 統一回應格式類別
-* 用於標準化所有 API 的回應結構，包含成功和錯誤情況
-* @param <T> 泛型參數，代表實際回傳的資料類型
-*/
 package com.example.todolist.response;
 
 import lombok.AllArgsConstructor;
@@ -10,14 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
-* 統一的 API 回應格式
-* @Data - 自動生成 getter、setter、toString 等方法
-* @AllArgsConstructor - 生成包含所有參數的建構子
-* @NoArgsConstructor - 生成無參數的建構子
-*/
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+ * API 統一回應格式類別
+ * 
+ * 用於標準化所有 API 的回應結構，包含成功和錯誤情況。
+ * 統一的響應格式可以簡化前端處理邏輯，提高開發效率。
+ * 
+ * @param <T> 泛型參數，代表實際回傳的資料類型
+ */
+@Data                  // Lombok 自動生成 getter、setter、equals、hashCode 和 toString 方法
+@AllArgsConstructor    // Lombok 自動生成包含所有字段的構造函數
+@NoArgsConstructor     // Lombok 自動生成無參數構造函數
 public class ApiResponse<T> {
    /**
     * HTTP 狀態碼
@@ -39,6 +36,8 @@ public class ApiResponse<T> {
 
    /**
     * 建立成功的回應
+    * 工廠方法，便於建立標準成功回應
+    * 
     * @param message 成功訊息
     * @param data 回傳的資料
     * @return 包裝後的 API 回應物件
@@ -49,6 +48,8 @@ public class ApiResponse<T> {
 
    /**
     * 建立錯誤的回應
+    * 工廠方法，便於建立標準錯誤回應
+    * 
     * @param status HTTP 錯誤狀態碼
     * @param message 錯誤訊息
     * @return 包裝後的 API 回應物件，data 為 null

@@ -11,33 +11,47 @@ import org.springframework.stereotype.Repository;
 import com.example.todolist.model.entity.Todo;
 
 /**
- * @Repository: 標記這是一個資料存取層的元件
- * - Spring 會自動創建這個介面的實例
- * - 不需要自己實作方法，Spring Data JPA 會自動提供實作
+ * 待辦事項數據訪問接口
+ * 
+ * 提供對 Todo 實體的數據庫操作方法，繼承 JpaRepository 獲得基本的 CRUD 功能。
+ * Spring Data JPA 會自動根據方法名生成對應的 SQL 查詢。
  */
-@Repository
+@Repository  // 標記為 Spring 數據訪問層組件
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 	
-	 // 根據用戶ID查詢待辦事項
+	/**
+	 * 根據用戶 ID 查詢所有待辦事項
+	 * 實現用戶數據隔離，確保用戶只能看到自己的待辦事項
+	 * 
+	 * @param userId 用戶 ID
+	 * @return 該用戶的所有待辦事項列表
+	 */
     List<Todo> findByUserId(Long userId);
     
-    // 檢查待辦事項是否屬於某用戶
+    /**
+     * 檢查待辦事項是否屬於指定用戶
+     * 用於權限驗證，確保用戶只能操作自己的待辦事項
+     * 
+     * @param id 待辦事項 ID
+     * @param userId 用戶 ID
+     * @return 如果待辦事項屬於該用戶則返回 true，否則返回 false
+     */
     boolean existsByIdAndUserId(Long id, Long userId);
     
-    // 根據用戶ID刪除待辦事項
+    /**
+     * 根據 ID 和用戶 ID 刪除待辦事項
+     * 確保用戶只能刪除自己的待辦事項
+     * 
+     * @param id 待辦事項 ID
+     * @param userId 用戶 ID
+     */
     void deleteByIdAndUserId(Long id, Long userId);
-    // JpaRepository<實體類別, 主鍵類型>
     
-    // 已經繼承的基本 CRUD 方法：
-    // save(entity): 保存或更新
-    // findById(id): 根據 ID 查詢
-    // findAll(): 查詢所有
-    // delete(entity): 刪除
-    // deleteById(id): 根據 ID 刪除
-    // count(): 計算總數
-    // existsById(id): 檢查 ID 是否存在
-    
-    // 可以自定義查詢方法，例如：
-    // List<Todo> findByCompleted(Boolean completed);
-    // Optional<Todo> findByText(String text);
+    // 從 JpaRepository 繼承的常用方法：
+    // save(entity) - 保存或更新實體
+    // findById(id) - 根據 ID 查找實體
+    // findAll() - 查找所有實體
+    // deleteById(id) - 根據 ID 刪除實體
+    // delete(entity) - 刪除實體
+    // count() - 計算實體總數
 }

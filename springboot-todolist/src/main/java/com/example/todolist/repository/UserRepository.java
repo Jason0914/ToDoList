@@ -7,42 +7,55 @@ import org.springframework.stereotype.Repository;
 
 import com.example.todolist.model.entity.User;
 
-@Repository
-public interface UserRepository extends JpaRepository<User,Long> {
+/**
+ * 用戶數據訪問接口
+ * 
+ * 提供對 User 實體的數據庫操作方法，繼承 JpaRepository 獲得基本的 CRUD 功能。
+ * Spring Data JPA 會自動根據方法名生成對應的 SQL 查詢。
+ */
+@Repository  // 標記為 Spring 數據訪問層組件
+public interface UserRepository extends JpaRepository<User, Long> {
 	
-	//根據用戶查找用戶
+	/**
+	 * 根據用戶名查找用戶
+	 * 方法命名遵循 Spring Data JPA 的命名規則，會自動轉換為 SQL 查詢
+	 * 
+	 * @param username 要查詢的用戶名
+	 * @return 包含用戶的 Optional 對象，如果未找到則為 empty
+	 */
 	Optional<User> findByUsername(String username);
 	
-	//根據信箱查找用戶
+	/**
+	 * 根據電子郵件查找用戶
+	 * 
+	 * @param email 要查詢的電子郵件
+	 * @return 包含用戶的 Optional 對象，如果未找到則為 empty
+	 */
 	Optional<User> findByEmail(String email);
 	
-	//檢查用戶是否已存在
+	/**
+	 * 檢查用戶名是否已存在
+	 * 用於註冊時的唯一性檢查
+	 * 
+	 * @param username 要檢查的用戶名
+	 * @return 存在返回 true，不存在返回 false
+	 */
 	boolean existsByUsername(String username);
 	
-	//檢查信箱是否已存在
+	/**
+	 * 檢查電子郵件是否已存在
+	 * 用於註冊時的唯一性檢查
+	 * 
+	 * @param email 要檢查的電子郵件
+	 * @return 存在返回 true，不存在返回 false
+	 */
 	boolean existsByEmail(String email);
 
+	// 從 JpaRepository 繼承的常用方法：
+	// save(entity) - 保存或更新實體
+	// findById(id) - 根據 ID 查找實體
+	// findAll() - 查找所有實體
+	// deleteById(id) - 根據 ID 刪除實體
+	// delete(entity) - 刪除實體
+	// count() - 計算實體總數
 }
-
-
-//這個 Repository 介面的說明：
-//繼承 JpaRepository，泛型參數分別是：
-//
-//User：實體類型
-//Long：主鍵類型
-//
-//
-//自定義的查詢方法：
-//
-//findByUsername：用於登入時查找用戶
-//findByEmail：用於信箱相關功能
-//existsByUsername：用於註冊時檢查用戶名是否重複
-//existsByEmail：用於註冊時檢查信箱是否重複
-//
-//
-//除了這些自定義方法外，我們還繼承了 JpaRepository 的所有基本方法，例如：
-//
-//save()：保存實體
-//findById()：根據 ID 查找
-//delete()：刪除實體
-//findAll()：查找所有實體

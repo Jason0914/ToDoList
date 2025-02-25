@@ -1,3 +1,156 @@
+# 後端架構概述
+
+## 後端分層架構
+
+這個專案採用了標準的三層架構設計，這是 Spring Boot 應用程序中常見的架構模式：
+
+1. **表現層 (Presentation Layer)**：Controller
+2. **業務邏輯層 (Business Logic Layer)**：Service
+3. **數據訪問層 (Data Access Layer)**：Repository
+
+## 層次結構與職責
+
+### Controller 層
+- 接收並處理 HTTP 請求
+- 驗證請求數據
+- 調用相應的 Service 層方法
+- 封裝並返回響應
+
+### Service 層
+- 實現業務邏輯
+- 協調多個 Repository 操作
+- 處理事務
+- 執行數據轉換 (Entity <-> DTO)
+
+### Repository 層
+- 數據庫訪問接口
+- 定義數據查詢方法
+- 通過 Spring Data JPA 實現
+
+### Entity 層
+- 映射數據庫表結構
+- 定義實體間關係
+- 包含 JPA 映射注解
+
+### DTO 層
+- 定義數據傳輸對象
+- 隔離內部實體與外部接口
+- 特定用途的數據封裝
+
+## 數據流程
+
+1. HTTP 請求 → Controller
+2. Controller 將請求轉換為 DTO
+3. DTO 傳遞給 Service 層
+4. Service 層使用 Repository 訪問數據庫
+5. Repository 返回 Entity 對象
+6. Service 層將 Entity 轉換為 DTO
+7. DTO 返回給 Controller
+8. Controller 封裝響應並返回
+
+## 核心技術
+
+### Spring Boot
+- 提供自動配置
+- 簡化應用開發
+- 內置 Tomcat 服務器
+
+### Spring Data JPA
+- 簡化數據庫操作
+- 減少樣板代碼
+- 自定義查詢方法
+
+### Spring Security
+- 用戶認證與授權
+- 密碼加密
+- 安全配置
+
+### ModelMapper
+- Entity 與 DTO 之間的轉換
+- 簡化對象映射
+
+### Lombok
+- 減少樣板代碼
+- 自動生成 getter、setter 等方法
+
+## 實體關係
+
+### 用戶 (User)
+- 一個用戶可以有多個待辦事項 (One-to-Many)
+- 一個用戶可以有多個交易記錄 (One-to-Many)
+- 一個用戶可以有一個密碼重設令牌 (One-to-One)
+
+### 待辦事項 (Todo)
+- 每個待辦事項屬於一個用戶 (Many-to-One)
+
+### 交易記錄 (Transaction)
+- 每個交易記錄屬於一個用戶 (Many-to-One)
+
+### 密碼重設令牌 (PasswordResetToken)
+- 每個令牌關聯一個用戶 (One-to-One)
+
+## 目錄結構
+
+```
+com.example.todolist/
+├── config/                  // 配置類
+│   ├── ModelMapperConfig.java
+│   └── SecurityConfig.java
+├── controller/              // API 控制器
+│   ├── TodoController.java
+│   ├── TransactionController.java
+│   ├── UserController.java
+│   └── PasswordResetController.java
+├── exception/               // 自定義異常
+│   ├── GlobalExceptionHandler.java
+│   └── TodoNotFoundException.java
+├── model/                   // 數據模型
+│   ├── dto/                 // 數據傳輸對象
+│   │   ├── LoginDTO.java
+│   │   ├── RegisterDTO.java
+│   │   ├── TodoDTO.java
+│   │   ├── TransactionDTO.java
+│   │   ├── UserDTO.java
+│   │   └── UserResponseDTO.java
+│   └── entity/              // 實體類
+│       ├── PasswordResetToken.java
+│       ├── Todo.java
+│       ├── Transaction.java
+│       └── User.java
+├── repository/              // 數據訪問層
+│   ├── PasswordResetTokenRepository.java
+│   ├── TodoRepository.java
+│   ├── TransactionRepository.java
+│   └── UserRepository.java
+├── response/                // 響應封裝
+│   └── ApiResponse.java
+├── service/                 // 業務邏輯層
+│   ├── EmailService.java
+│   ├── TodoService.java
+│   ├── TodoServiceImpl.java
+│   ├── TransactionService.java
+│   ├── TransactionServiceImpl.java
+│   ├── UserService.java
+│   └── UserServiceImpl.java
+└── SpringbootTodolistApplication.java  // 應用入口
+```
+
+## 後端開發順序
+
+在開發 Spring Boot 後端時，通常遵循以下順序：
+
+1. 創建實體類 (Entity)
+2. 創建 DTO 類
+3. 實現 Repository 接口
+4. 定義 Service 接口
+5. 實現 Service 接口
+6. 創建 Controller 類
+7. 添加異常處理
+8. 配置安全性和其他功能
+
+接下來，我們將詳細分析每個組件的實現。
+
+
 先從 Model 層開始:
 
 首先定義 Todo.java (entity) - 這是核心的數據模型

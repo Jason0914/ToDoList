@@ -2,18 +2,33 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
+/**
+ * 首頁組件
+ *
+ * 應用的歡迎頁面，根據用戶是否已登入顯示不同的內容。
+ * 未登入用戶看到登入/註冊按鈕和應用特色介紹，
+ * 已登入用戶看到功能入口按鈕。
+ *
+ * @returns {JSX.Element} 首頁
+ */
 function Home() {
+  /**
+   * 從認證上下文獲取登入狀態
+   */
   const { isAuthenticated } = useAuth();
 
   return (
     <div className="fade-in">
+      {/* 頁面標題區域 */}
       <div className="home-header">
         <h1>歡迎使用 Todo 應用</h1>
         <p className="lead">輕鬆管理您的待辦事項，提高工作效率</p>
       </div>
 
+      {/* 未登入用戶內容 */}
       {!isAuthenticated && (
         <div className="container">
+          {/* 登入/註冊按鈕區域 */}
           <div className="row justify-content-center g-4">
             <div className="col-md-6">
               <div className="card text-center">
@@ -35,7 +50,9 @@ function Home() {
             </div>
           </div>
 
+          {/* 應用特色介紹區域 */}
           <div className="row justify-content-center mt-5 g-4">
+            {/* 特色 1：簡單易用 */}
             <div className="col-md-4">
               <div className="card h-100">
                 <div className="card-body text-center">
@@ -46,6 +63,8 @@ function Home() {
                 </div>
               </div>
             </div>
+
+            {/* 特色 2：安全可靠 */}
             <div className="col-md-4">
               <div className="card h-100">
                 <div className="card-body text-center">
@@ -56,6 +75,8 @@ function Home() {
                 </div>
               </div>
             </div>
+
+            {/* 特色 3：隨時訪問 */}
             <div className="col-md-4">
               <div className="card h-100">
                 <div className="card-body text-center">
@@ -70,6 +91,7 @@ function Home() {
         </div>
       )}
 
+      {/* 已登入用戶內容 */}
       {isAuthenticated && (
         <div className="container text-center">
           <div className="card">

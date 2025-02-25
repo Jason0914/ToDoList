@@ -1,0 +1,140 @@
+# 前端架構概述
+
+## 前端技術棧
+
+本項目的前端使用了以下技術：
+
+- **核心框架**：React.js
+- **路由管理**：React Router DOM
+- **狀態管理**：React Context API
+- **HTTP 請求**：Fetch API
+- **UI 框架**：Bootstrap 5
+- **數據可視化**：Recharts
+- **構建工具**：Vite
+
+## 目錄結構
+
+```
+src/
+├── App.jsx               // 主應用組件和路由配置
+├── main.jsx              // 應用入口點
+├── App.css               // 全局樣式
+├── styles/
+│   └── custom.css        // 自定義樣式
+├── pages/                // 頁面組件
+│   ├── Home.jsx          // 首頁
+│   ├── Login.jsx         // 登入頁
+│   ├── Register.jsx      // 註冊頁
+│   ├── TodoPage.jsx      // 待辦事項頁面
+│   ├── TransactionPage.jsx // 記帳頁面
+│   ├── ForgotPassword.jsx  // 忘記密碼頁面
+│   └── ResetPassword.jsx   // 重設密碼頁面
+├── components/           // 通用組件
+│   ├── ProtectedRoute.jsx  // 受保護路由組件
+│   ├── TodoList.jsx      // 待辦事項列表
+│   ├── TodoItem.jsx      // 待辦事項項目
+│   ├── TodoInput.jsx     // 待辦事項輸入
+│   └── transactions/     // 交易相關組件
+│       ├── TransactionList.jsx    // 交易列表
+│       ├── TransactionForm.jsx    // 交易表單
+│       ├── TransactionChart.jsx   // 交易圖表
+│       └── TransactionSummary.jsx // 交易摘要
+├── contexts/
+│   └── AuthContext.jsx   // 認證上下文
+└── services/             // API 服務
+    ├── userService.js    // 用戶服務 (登入/註冊)
+    ├── todoService.js    // 待辦事項服務
+    └── transactionService.js // 交易服務
+```
+
+## 核心組件
+
+### App.jsx
+- 應用程序的主要入口點
+- 配置路由和導航
+- 使用 AuthProvider 包裝整個應用，提供認證狀態
+
+### AuthContext.jsx
+- 使用 Context API 管理認證狀態
+- 提供登入/登出功能
+- 從 localStorage 恢復用戶會話
+
+### ProtectedRoute.jsx
+- 路由保護組件
+- 檢查用戶是否已登入，否則重定向到登入頁面
+
+## 功能模塊
+
+### 1. 認證模塊
+- **登入功能**：用戶輸入憑證並驗證
+- **註冊功能**：新用戶創建帳號
+- **忘記密碼功能**：通過電子郵件重設密碼
+- **登出功能**：清除用戶會話
+
+### 2. 待辦事項模塊
+- **TodoPage**：待辦事項主頁面
+- **TodoList**：顯示待辦事項列表
+- **TodoItem**：單個待辦事項的展示與操作
+- **TodoInput**：新增待辦事項的輸入框
+
+### 3. 交易記錄模塊
+- **TransactionPage**：交易記錄主頁面
+- **TransactionList**：交易記錄列表
+- **TransactionForm**：新增/編輯交易的表單
+- **TransactionChart**：數據可視化圖表
+- **TransactionSummary**：收支統計摘要
+
+## API 服務
+
+### userService.js
+- **registerUser**：註冊新用戶
+- **loginUser**：用戶登入
+- **logoutUser**：用戶登出
+- **requestPasswordReset**：請求密碼重設
+- **resetPassword**：執行密碼重設
+
+### todoService.js
+- **fetchTodos**：獲取所有待辦事項
+- **addTodo**：新增待辦事項
+- **updateTodo**：更新待辦事項
+- **deleteTodo**：刪除待辦事項
+
+### transactionService.js
+- **getAllTransactions**：獲取所有交易記錄
+- **getTransactionsByDateRange**：按日期範圍獲取交易
+- **getTransactionsByCategory**：按類別獲取交易
+- **getTransactionsSummary**：獲取交易統計摘要
+- **createTransaction**：創建新交易
+- **updateTransaction**：更新交易
+- **deleteTransaction**：刪除交易
+
+## 數據流
+
+1. 用戶在界面上執行操作（如登入、添加待辦事項）
+2. 組件調用相應的 API 服務函數
+3. API 服務使用 Fetch API 發送請求到後端
+4. 後端處理請求並返回響應
+5. API 服務解析響應並返回給組件
+6. 組件更新狀態，重新渲染用戶界面
+
+## UI/UX 設計
+
+- **響應式設計**：使用 Bootstrap 網格系統適應不同屏幕尺寸
+- **卡片布局**：內容使用卡片組件展示，清晰區分不同功能區域
+- **漸變色**：使用漸變色背景和按鈕，提升視覺吸引力
+- **動畫效果**：使用 CSS 動畫增強用戶體驗
+- **交互反饋**：操作後提供視覺反饋，如成功/錯誤提示
+
+## 安全考慮
+
+- **受保護路由**：未登入用戶無法訪問需要授權的頁面
+- **憑證管理**：使用 HttpOnly Cookie 存儲會話信息
+- **錯誤處理**：妥善處理 API 錯誤，避免敏感信息洩露
+- **輸入驗證**：前端進行基本的輸入驗證，防止無效數據提交
+
+## 性能優化
+
+- **懶加載**：使用 React Router 的懶加載功能優化初次加載速度
+- **按需渲染**：只渲染當前視圖所需的組件
+- **合理的 API 設計**：只請求當前所需的數據
+- **緩存策略**：適當緩存不常變化的數據，如用戶信息

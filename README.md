@@ -1,4 +1,4 @@
-# Todo & Transaction Management System - 專案架構文檔
+# Todo & Transaction Management System - 專案架構
 
 ## 專案概述
 這個專案是一個多功能個人管理系統，包含待辦事項管理與記帳功能，採用前後端分離架構設計。系統提供了使用者註冊、登入、待辦事項管理、收支記錄與統計分析等功能。

@@ -216,25 +216,25 @@ SHA-256本質上是一種通用雜湊算法，是用來處理快速計算，這�
 
 ### 首頁
 
-![首頁](/src/main/resources/static/images/home_page.png)
+![首頁](springboot-todolist/src/main/resources/static/images/home_page.png)
 
 ### 登入
 
-![登入頁面](/src/main/resources/static/images/login_page.png)
+![登入頁面](springboot-todolist/src/main/resources/static/images/login_page.png)
 
 ### 註冊帳號
 
-![註冊頁面](/src/main/resources/static/images/register_page.png)
+![註冊頁面](springboot-todolist/src/main/resources/static/images/register_page.png)
 ### 登入後進入待辦事項
 
-![待辦事項頁面2](/src/main/resources/static/images/todolist.png)
+![待辦事項頁面2](springboot-todolist/src/main/resources/static/images/todolist.png)
 
 ### 暫時隱藏待辦事項
 
-![待辦事項頁面1](/src/main/resources/static/images/todolist_1.png)
+![待辦事項頁面1](springboot-todolist/src/main/resources/static/images/todolist_1.png)
 
 ### 記帳功能
 
-![交易記錄頁面2](/src/main/resources/static/images/transaction.png)
+![交易記錄頁面2](springboot-todolist/src/main/resources/static/images/transaction.png)
 
-![交易記錄頁面1](/src/main/resources/static/images/transaction_1.png)
+![交易記錄頁面1](springboot-todolist/src/main/resources/static/images/transaction_1.png)

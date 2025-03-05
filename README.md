@@ -116,7 +116,7 @@ src/
 - **password_reset_token → users**
     - 一對一關係：一個用戶對應一個密碼重設令牌
 
-![資料庫關聯圖](/src/main/resources/static/images/database_diagram.png)
+springboot-todolist/src/main/resources/static/images/database_diagram.png
 
 ## 4. 重點細節部分
 

@@ -1,52 +1,57 @@
-# Todo & Transaction Management System - 專案架構
+# Todo 專案技術報告
 
-## 專案概述
-這個專案是一個多功能個人管理系統，包含待辦事項管理與記帳功能，採用前後端分離架構設計。系統提供了使用者註冊、登入、待辦事項管理、收支記錄與統計分析等功能。
+## 1. 功能需求與流程
 
-## 系統架構
+### 待辦事項管理功能
 
-### 前後端分離設計
-- **前端**：React.js 實現的單頁應用程式 (SPA)
-- **後端**：Spring Boot RESTful API
-- **通訊**：HTTP/JSON 格式
-- **認證**：Session-based 認證機制
+- 新增待辦事項
+- 刪除待辦事項
+- 暫時隱藏待辦事項
 
-## 技術棧
+### 用戶功能
 
-### 前端技術
-- **框架**：React.js
-- **路由**：React Router DOM
-- **狀態管理**：React Context API
-- **UI 框架**：Bootstrap 5
-- **圖表可視化**：Recharts
-- **HTTP 請求**：Fetch API
-- **樣式**：Custom CSS 與 CSS 動畫
+- 用戶註冊
+- 用戶登入
+- 忘記密碼
 
-### 後端技術
-- **框架**：Spring Boot
-- **安全性**：Spring Security
-- **ORM**：Spring Data JPA
-- **依賴注入**：Spring IoC 容器
-- **日誌管理**：SLF4J + Logback
-- **密碼加密**：BCrypt
-- **格式轉換**：ModelMapper (Entity 與 DTO 轉換)
-- **郵件服務**：JavaMail API
-- **代碼簡化**：Lombok
+### 記帳功能實現流程
 
-### 數據庫
-- 關聯式數據庫 (根據 JPA 配置推測)
-- 表結構：
-  - users (用戶表)
-  - todo (待辦事項表)
-  - transactions (交易記錄表)
-  - password_reset_token (密碼重設令牌表)
+- 新增交易記錄
+- 更新交易記錄
+- 刪除交易記錄
+- 查詢交易列表
+- 按條件篩選交易
+- 計算財務摘要
+- 交易類別管理
+- 交易日期與金額追蹤
+- 備註信息添加
 
-## 應用架構
+## 2. 技術架構
 
-### 前端架構
+- **後端**：Java、Spring Boot
+- **前端**：React、Bootstrap
+- **數據庫**：MySQL
 
-#### 目錄結構
-```
+**部署配置**
+
+- 前端部署端口：5173
+- 後端 API 端口：8080
+- 本地開發 URL：[http://localhost:5173](http://localhost:5173/) (前端)、[http://localhost:8080](http://localhost:8080/) (後端)
+
+**後端開發分層架構：**
+
+1. 創建實體類 (Entity) - 映射數據庫結構
+2. 創建 DTO - 定義數據傳輸格式
+3. 實現 Repository - 處理數據訪問
+4. 定義 Service - 規範業務邏輯
+5. 實現 Service - 實現業務邏輯
+6. 創建 Controller - 處理 HTTP 請求
+7. 添加異常處理 - 提供友好的錯誤響應
+8. 配置安全性和其他功能
+
+### **前端目錄結構**
+
+```json
 src/
 ├── App.jsx               // 主應用組件和路由配置
 ├── main.jsx              // 應用入口點
@@ -74,32 +79,14 @@ src/
 ├── contexts/
 │   └── AuthContext.jsx   // 認證上下文
 └── services/             // API 服務
-    ├── userService.js    // 用戶服務 (登入/註冊)
-    ├── todoService.js    // 待辦事項服務
-    └── transactionService.js // 交易服務
+├── userService.js    // 用戶服務 (登入/註冊)
+├── todoService.js    // 待辦事項服務
+└── transactionService.js // 交易服務
 ```
 
-#### 組件架構
-- **App.jsx**：應用程式根組件，配置路由與導航
-- **認證模塊**：登入、註冊、忘記密碼流程
-- **待辦事項模塊**：待辦事項的 CRUD 操作
-- **交易記錄模塊**：交易記錄的 CRUD 操作與圖表分析
+### API結構
 
-#### 狀態管理
-- AuthContext：管理用戶認證狀態，提供登入/登出功能
-
-### 後端架構
-
-#### 分層設計
-1. **Controller 層**：處理 HTTP 請求/響應，轉發給 Service 層
-2. **Service 層**：業務邏輯處理，調用 Repository 層
-3. **Repository 層**：數據訪問層，與數據庫交互
-4. **Model 層**：
-   - Entity：數據庫映射實體
-   - DTO：數據傳輸對象
-
-#### API 結構
-```
+```json
 /api/
 ├── users/
 │   ├── /register        // 用戶註冊
@@ -113,125 +100,142 @@ src/
 │   ├── /                // 獲取所有待辦事項 (GET) 或新增 (POST)
 │   └── /{id}            // 更新 (PUT) 或刪除 (DELETE) 待辦事項
 └── transactions/
-    ├── /                // 獲取所有交易 (GET) 或新增 (POST)
-    ├── /{id}            // 更新 (PUT) 或刪除 (DELETE) 交易
-    ├── /range          // 獲取特定時間範圍的交易
-    ├── /category/{category} // 獲取特定類別的交易
-    └── /summary        // 獲取交易統計信息
+├── /                // 獲取所有交易 (GET) 或新增 (POST)
+├── /{id}            // 更新 (PUT) 或刪除 (DELETE) 交易
+├── /range          // 獲取特定時間範圍的交易
+├── /category/{category} // 獲取特定類別的交易
+└── /summary        // 獲取交易統計信息
 ```
 
-## 核心功能實現
+## 3.資料庫關聯
 
-### 用戶認證與授權
-- 基於 Session 的認證機制
-- 密碼使用 BCrypt 加密存儲
-- ProtectedRoute 組件實現前端路由保護
-- 使用 Spring Security 實現後端安全控制
-- 密碼重設功能，通過郵件發送重設連結
+- **todo → users**
+    - 一對多關係：一個用戶可以有多個待辦事項
+- **transactions → users**
+    - 一對多關係：一個用戶可以有多個交易記錄
+- **password_reset_token → users**
+    - 一對一關係：一個用戶對應一個密碼重設令牌
 
-### 待辦事項管理
-- 待辦事項的新增、查詢、更新、刪除 (CRUD)
-- 待辦事項與用戶關聯，確保數據隔離
-- 標記完成/未完成功能
+![image.png](image.png)
 
-### 交易記錄管理
-- 收入與支出記錄的新增、查詢、更新、刪除
-- 按日期範圍和類別篩選交易
-- 交易統計分析：總收入、總支出、結餘
-- 數據可視化：收支分析和支出分布圖表
+## 4. 重點細節部分
 
-## 設計模式與最佳實踐
+### 4.1 忘記密碼的郵件實現
 
-### 設計模式
-1. **MVC 模式**：前後端分離各自實現 MVC
-2. **分層架構**：後端採用 Controller-Service-Repository 分層
-3. **依賴注入**：使用 Spring 的 DI 實現松耦合
-4. **數據訪問對象**：DTO 模式用於數據傳輸
-5. **單例模式**：Spring Bean 默認為單例
+### 技術實現思路
 
-### 安全性實現
-- CORS 配置確保跨域安全
-- Session-based 認證
-- 密碼加密存儲
-- 安全的密碼重設流程
+**1.令牌生成與存儲**
 
-### 響應式設計
-- 使用 Bootstrap 實現響應式 UI
-- 移動端友好的界面設計
+```java
+// 生成安全的隨機令牌
+String token = UUID.randomUUID().toString();
 
-### 異常處理
-- 全局異常處理器 (GlobalExceptionHandler)
-- 自定義業務異常 (如 TodoNotFoundException)
-- 標準化 API 響應格式 (ApiResponse)
+// 創建並保存密碼重設令牌
+PasswordResetToken resetToken = new PasswordResetToken();
+resetToken.setUser(user);
+resetToken.setToken(token);
+resetToken.setExpiryDate(LocalDateTime.now().plusHours(24));  // 24小時有效期
+tokenRepository.save(resetToken);
+```
 
-## 數據模型
+**2.環境設置**
 
-### 用戶 (User)
-- id：主鍵
-- username：用戶名（唯一）
-- password：密碼（加密存儲）
-- email：電子郵件（唯一）
-- createTime：創建時間
-- updateTime：更新時間
+```java
+# application.properties 配置
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your-email@gmail.com
+spring.mail.password=your-app-password
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
 
-### 待辦事項 (Todo)
-- id：主鍵
-- text：待辦事項內容
-- completed：完成狀態
-- user_id：關聯用戶 ID (外鍵)
+### 安全性考量
 
-### 交易記錄 (Transaction)
-- id：主鍵
-- date：交易日期
-- type：交易類型 (INCOME/EXPENSE)
-- amount：金額
-- category：類別
-- note：備註
-- user_id：關聯用戶 ID (外鍵)
+1. **令牌唯一性**
+2. **過期機制**
 
-### 密碼重設令牌 (PasswordResetToken)
-- id：主鍵
-- token：重設令牌
-- user_id：關聯用戶 ID (外鍵)
-- expiryDate：過期時間
+### 4.2 安全性保護使用者密碼加密
 
-## 開發與部署
+### 加密策略與實現
 
-### 開發環境
-- 前端：
-  - Node.js 環境
-  - Vite 作為構建工具
-  - React 開發環境
-- 後端：
-  - Java JDK
-  - Spring Boot 開發環境
-  - Maven 構建工具
+**BCrypt加密實現**
 
-### 部署配置
-- 前端部署端口：5173
-- 後端 API 端口：8080
-- 本地開發 URL：http://localhost:5173 (前端)、http://localhost:8080 (後端)
+```java
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
 
-## 特色與優點
+// 在用戶註冊時加密密碼
+user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
-1. **完整的前後端分離架構**：清晰的責任分離，便於獨立開發與擴展
-2. **豐富的用戶體驗**：動畫效果、漸變色彩、響應式設計
-3. **安全的認證機制**：加密密碼、安全的密碼重設流程
-4. **數據可視化**：圖表展示收支情況，直觀易理解
-5. **多語言支持**：界面設計支持中文
-6. **優雅的錯誤處理**：用戶友好的錯誤提示
-7. **模塊化設計**：便於維護與擴展
+// 在用戶登入時驗證密碼
+if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+    throw new RuntimeException("密碼錯誤");
+}
+```
 
-## 未來擴展方向
+### 安全策略
 
-1. **API 文檔集成**：添加 Swagger 或 OpenAPI 文檔
-2. **單元測試覆蓋**：提高代碼質量與穩定性
-3. **多主題支持**：深色模式支持
-4. **多語言國際化**：支持更多語言
-5. **推送通知**：待辦事項到期提醒
-6. **數據導入/導出**：CSV/Excel 數據導入導出功能
-7. **更豐富的數據分析**：支出趨勢、預算計劃等
+- **使用BCrypt算法**：自動處理鹽值和多輪雜湊，抵抗彩虹表攻擊
 
-## 結論
+**為何這邊不使用SHA-256而是BCrypt**
 
-本專案實現了一個功能完整的個人管理系統，涵蓋待辦事項管理與財務記錄功能。通過採用現代化的前後端分離架構與主流技術棧，系統具有良好的可維護性、擴展性與用戶體驗。專案中實現的設計模式與最佳實踐確保了代碼質量與系統安全性。
+SHA-256本質上是一種通用雜湊算法，是用來處理快速計算，這在密碼安全領域反而成為缺點。攻擊者可以在短時間內嘗試大量可能的密碼組合。即使加入鹽值，SHA-256的計算速度仍然太快，無法有效抵禦暴力破解。
+結論就是，BCrypt通過刻意減慢加密速度，提供了更強的抗暴力破解。
+
+### 4.3 響應式設計實現
+
+**手機、平板都能方便使用**
+
+```css
+/* 基本樣式 */
+.transaction-card {
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+/* 平板設備 */
+@media (max-width: 768px) {
+  .transaction-card {
+    padding: 10px;
+  }
+}
+
+/* 手機設備 */
+@media (max-width: 576px) {
+  .transaction-card {
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+}
+```
+
+## **5.畫面展示**
+
+### 首頁
+
+![螢幕擷取畫面 2025-03-04 001407.png](%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2_2025-03-04_001407.png)
+
+### 登入
+
+![螢幕擷取畫面 2025-03-04 001431.png](%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2_2025-03-04_001431.png)
+
+### 註冊帳號
+
+![螢幕擷取畫面 2025-03-04 001445.png](%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2_2025-03-04_001445.png)
+
+### 登入後進入待辦事項
+
+![螢幕擷取畫面 2025-03-04 001540.png](%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2_2025-03-04_001540.png)
+
+### 暫時隱藏待辦事項
+
+![螢幕擷取畫面 2025-03-04 001554.png](%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2_2025-03-04_001554.png)
+
+### 記帳功能
+
+![螢幕擷取畫面 2025-03-04 001611.png](%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2_2025-03-04_001611.png)
+
+![螢幕擷取畫面 2025-03-04 001625.png](%E8%9E%A2%E5%B9%95%E6%93%B7%E5%8F%96%E7%95%AB%E9%9D%A2_2025-03-04_001625.png)
